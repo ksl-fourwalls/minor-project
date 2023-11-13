@@ -6,8 +6,43 @@ openstreetmap roads to html5 array -->
 <link id="ico" rel="shortcut icon" href="json_osm_chung.ico">
 <title>json webglcarsimheight</title>
 <meta charset="utf-8">
+<style>
+#liveView{
+	right: 0;
+	position: absolute;
+	z-index: 1000 !important;
+}
+
+.videoView {
+  position: relative;
+  float: left;
+  width: 48%;
+  margin: 2% 1%;
+  cursor: pointer;
+}
+.videoView p {
+  position: absolute;
+  padding: 5px;
+  background-color: rgba(255, 111, 0, 0.85);
+  color: #FFF;
+  border: 1px dashed rgba(255, 255, 255, 0.7);
+  z-index: 2;
+  font-size: 12px;
+  margin: 0;
+}
+
+.highlighter {
+  background: rgba(0, 255, 0, 0.25);
+  border: 1px dashed #fff;
+  z-index: 1;
+  position: absolute;
+}
+</style>
 </head>
 <body bgcolor="#FFFFFF" onunload="quit=1;close();" >
+<div id="liveView" class="videoView">
+     <video playsinline autoplay muted id="myvideo" width="800px" height="600px"></video>
+</div>
 <div id="alldiv"  BGCOLOR="#FFFFFF" onKeyUp="keyup(event);" onKeyDown="keydown(event);" OnTouchDown="submousedown(event);"  OnTouchUp="submouseup(event);" >
 	<div id="mydiv" style="position:absolute;top:0px;left:0px;z-index:200;" >
 	<canvas id="canvasgl" style="border:none;top:0px;left:0px;" width="600" height="400"></canvas>
@@ -18,6 +53,8 @@ openstreetmap roads to html5 array -->
 	<br />
 	<button id="fullscreen"  onclick="sizescreen();">fullscreen</button>
 	<button id="loadsave"  onclick="subloadsave();">loadsave</button>
+	<button id="autodrive"  onclick="findpath();">autodrive</button>
+	<button id="predict"  onclick="predictWebcam();">predict</button>
 	<select id="combo" onChange="subcombo();" onblur="tfocus=1;waitkey=0;resetmouse2();" onfocus="tfocus=0;waitkey=0;">
           <option id="initial">initial</option>
           <option id="flyto">flyto</option>
@@ -47,8 +84,8 @@ openstreetmap roads to html5 array -->
           <option id="washington">washington</option>
           <option id="tajmahal">tajmahal</option>
      </select>
-	 <input type="text" id="msg" maxlength="99" size="99" />
-	 <!--input type="text"  readonly="readonly" id="msg" maxlength="70" size="70" /-->
+     <!--<input type="text" id="msg" maxlength="99" size="99" />-->
+     <input type="text"  readonly="readonly" id="msg" maxlength="40" size="40" >
      <!--button id="quit"  onclick="subquit();">quit</button-->
      </div>
 	<div id="mapdiv" style="position:absolute;top:4022px;left:0px;width:100%;height:95%;" >
@@ -86,6 +123,15 @@ openstreetmap roads to html5 array -->
 <div id="zoomdiv" style="position:absolute;top:1400px;left:800px;z-index:400;width:40px;height:20px;">
 <button id="zoom"  onclick="subzoom();">zoom</button>
 </div>
+  <!-- Import TensorFlow.js library -->
+
+    <!-- Import TensorFlow.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js" type="text/javascript"></script>
+
+    <!-- Load the coco-ssd model to use to recognize things in images -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd" type="text/javascript"></script>
+
+<script src="main.js"></script>
 <script>
 try{if(localStorage){};}catch(e){localStorage=null;alert("localStorage is not supported");};
 var apikey='&key=AIzaSyAH372ZH8QSQgRHsqdtqNxkLVpcp_XUUkE';
@@ -14554,7 +14600,7 @@ MercatorLatLngtoPoint(lat,lng);
 worldx=pointx*Math.pow(2,zoom);
 worldy=pointy*Math.pow(2,zoom);
 }	 
-var fullscreen=1,windx2=windx/2,windy2=windy/2;
+var fullscreen=2,windx2=windx/2,windy2=windy/2;
 function sizescreen(){
 	    if(fullscreen==0){fullscreen=1;
 		                  canvas.width  = parseInt(window.innerWidth*0.98);
