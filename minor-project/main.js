@@ -19,6 +19,10 @@ function findpath() {
 	const canvas = document.querySelector("#canvasgl");
 	const stream = canvas.captureStream();
 	video.srcObject = stream;
+	// https://stackoverflow.com/questions/13864795/wait-until-an-html5-video-loads
+	video.addEventListener("loadeddata", function () {
+		predictWebcam();
+	}, false);
 }
 
 // Prediction loop!
